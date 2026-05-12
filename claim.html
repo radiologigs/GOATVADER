@@ -9,6 +9,7 @@
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 
   <style>
+
     *{
       margin:0;
       padding:0;
@@ -17,8 +18,9 @@
     }
 
     body{
-      background:#f3f4f6;
+      background:#0f172a;
       padding:20px;
+      color:white;
     }
 
     .container{
@@ -27,11 +29,11 @@
     }
 
     .card{
-      background:white;
+      background:#1e293b;
       border-radius:20px;
       padding:25px;
       margin-bottom:20px;
-      box-shadow:0 4px 15px rgba(0,0,0,0.08);
+      box-shadow:0 4px 15px rgba(0,0,0,0.3);
     }
 
     h1{
@@ -39,7 +41,7 @@
     }
 
     .subtitle{
-      color:gray;
+      color:#94a3b8;
       margin-bottom:25px;
     }
 
@@ -57,16 +59,23 @@
     }
 
     input{
-      border:1px solid #ddd;
+      border:1px solid #334155;
+      background:#0f172a;
+      color:white;
+    }
+
+    input::placeholder{
+      color:#94a3b8;
     }
 
     select{
-      border:1px solid #ddd;
-      background:white;
+      border:1px solid #334155;
+      background:#0f172a;
+      color:white;
     }
 
     button{
-      background:black;
+      background:#2563eb;
       color:white;
       font-weight:bold;
       cursor:pointer;
@@ -85,10 +94,10 @@
     }
 
     .voucher-card{
-      background:white;
+      background:#1e293b;
       border-radius:20px;
       padding:20px;
-      box-shadow:0 4px 15px rgba(0,0,0,0.08);
+      box-shadow:0 4px 15px rgba(0,0,0,0.3);
     }
 
     .voucher-header{
@@ -99,13 +108,13 @@
     }
 
     .success{
-      color:#16a34a;
+      color:#22c55e;
       font-size:22px;
       font-weight:bold;
     }
 
     .serial{
-      background:black;
+      background:#2563eb;
       color:white;
       padding:10px 14px;
       border-radius:10px;
@@ -124,15 +133,16 @@
     }
 
     .label{
-      color:gray;
+      color:#94a3b8;
     }
 
     .value{
       font-weight:bold;
+      text-align:right;
     }
 
     .qr-wrapper{
-      background:#f3f4f6;
+      background:#0f172a;
       border-radius:15px;
       padding:20px;
       display:flex;
@@ -142,14 +152,25 @@
 
     .empty{
       text-align:center;
-      color:gray;
+      color:#94a3b8;
       padding:40px;
     }
 
     @media(max-width:600px){
+
       h1{
         font-size:28px;
       }
+
+      .voucher-info div{
+        flex-direction:column;
+        gap:5px;
+      }
+
+      .value{
+        text-align:left;
+      }
+
     }
 
   </style>
@@ -163,6 +184,7 @@
   <div class="card">
 
     <h1>🎟 GOATVADER</h1>
+
     <div class="subtitle">
       Orang Tua Voucher Member
     </div>
@@ -224,6 +246,31 @@ let vouchers =
 
 renderVouchers();
 
+function formatDate(date){
+
+  const d =
+    String(date.getDate()).padStart(2, '0');
+
+  const m =
+    String(date.getMonth() + 1).padStart(2, '0');
+
+  const y =
+    date.getFullYear();
+
+  return `${d}/${m}/${y}`;
+}
+
+function formatTime(date){
+
+  return date.toLocaleTimeString(
+    'id-ID',
+    {
+      hour12:false,
+      timeZone:'Asia/Jakarta'
+    }
+  );
+}
+
 function generateVoucher(){
 
   const memberName =
@@ -233,7 +280,9 @@ function generateVoucher(){
     document.getElementById("voucherType").value;
 
   if(memberName.trim() === ""){
+
     alert("Isi nama member dulu brok 😭");
+
     return;
   }
 
@@ -242,12 +291,15 @@ function generateVoucher(){
     "VC-" +
     String(vouchers.length + 1).padStart(5, "0");
 
-  // TANGGAL SEKARANG
+  // CURRENT DATE
   const now = new Date();
 
-  // VALID 30 HARI
+  // VALID 30 DAYS
   const validUntil = new Date();
-  validUntil.setDate(validUntil.getDate() + 30);
+
+  validUntil.setDate(
+    validUntil.getDate() + 30
+  );
 
   const voucher = {
 
@@ -260,12 +312,13 @@ function generateVoucher(){
     status: "CLAIM VOUCHER SUCCESS",
 
     createdAt:
-      now.toLocaleDateString() +
+      formatDate(now) +
       " " +
-      now.toLocaleTimeString(),
+      formatTime(now) +
+      " UTC+7",
 
     validUntil:
-      validUntil.toLocaleDateString()
+      formatDate(validUntil)
 
   };
 
@@ -292,7 +345,7 @@ function renderVouchers(){
 
     container.innerHTML = `
       <div class="empty">
-        Belum ada voucher dibuat
+        Nothing here . . .
       </div>
     `;
 
@@ -319,7 +372,7 @@ function renderVouchers(){
 
           <div style="
             font-size:13px;
-            color:gray;
+            color:#94a3b8;
             margin-top:5px;
           ">
             ${voucher.createdAt}
@@ -385,5 +438,4 @@ function renderVouchers(){
 </script>
 
 </body>
-
 </html>
