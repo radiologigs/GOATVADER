@@ -152,167 +152,237 @@
 
 <body>
 
-  <div class="container">
+<div class="container">
 
-    <!-- FORM -->
-    <div class="card">
+  <!-- FORM -->
+  <div class="card">
 
-      <h1>🎟 Voucher Generator</h1>
-      <div class="subtitle">
-        Generate voucher QR otomatis
-      </div>
-
-      <div class="form-grid">
-
-        <input
-          type="number"
-          id="discount"
-          placeholder="Discount %"
-          value="10"
-        >
-
-        <input
-          type="date"
-          id="validUntil"
-        >
-
-        <button onclick="generateVoucher()">
-          Generate Voucher
-        </button>
-
-      </div>
-
+    <h1>🎟 Voucher Generator</h1>
+    <div class="subtitle">
+      Generate voucher member otomatis
     </div>
 
-    <!-- RESULT -->
-    <div class="voucher-list" id="voucherList">
+    <div class="form-grid">
 
-      <div class="empty">
-        Belum ada voucher dibuat
-      </div>
+      <!-- NAMA MEMBER -->
+      <input
+        type="text"
+        id="memberName"
+        placeholder="Nama Member"
+      >
+
+      <!-- DROPDOWN DISKON -->
+      <select id="voucherType">
+
+        <option value="10% OFF">
+          Voucher 10% OFF
+        </option>
+
+        <option value="20% OFF">
+          Voucher 20% OFF
+        </option>
+
+        <option value="30% OFF">
+          Voucher 30% OFF
+        </option>
+
+        <option value="FREE DRINK">
+          FREE DRINK
+        </option>
+
+        <option value="BUY 1 GET 1">
+          BUY 1 GET 1
+        </option>
+
+      </select>
+
+      <!-- BUTTON -->
+      <button onclick="generateVoucher()">
+        Generate Voucher
+      </button>
 
     </div>
 
   </div>
 
+  <!-- RESULT -->
+  <div class="voucher-list" id="voucherList">
+
+    <div class="empty">
+      Belum ada voucher dibuat
+    </div>
+
+  </div>
+
+</div>
+
 <script>
 
-  let vouchers = JSON.parse(localStorage.getItem("vouchers")) || [];
+let vouchers =
+  JSON.parse(localStorage.getItem("vouchers")) || [];
+
+renderVouchers();
+
+function generateVoucher(){
+
+  const memberName =
+    document.getElementById("memberName").value;
+
+  const voucherType =
+    document.getElementById("voucherType").value;
+
+  if(memberName.trim() === ""){
+    alert("Isi nama member dulu brok 😭");
+    return;
+  }
+
+  // SERIAL NUMBER
+  const serial =
+    "VC-" +
+    String(vouchers.length + 1).padStart(5, "0");
+
+  // TANGGAL SEKARANG
+  const now = new Date();
+
+  // VALID 30 HARI
+  const validUntil = new Date();
+  validUntil.setDate(validUntil.getDate() + 30);
+
+  const voucher = {
+
+    serial: serial,
+
+    memberName: memberName,
+
+    voucherType: voucherType,
+
+    status: "CLAIM VOUCHER SUCCESS",
+
+    createdAt:
+      now.toLocaleDateString() +
+      " " +
+      now.toLocaleTimeString(),
+
+    validUntil:
+      validUntil.toLocaleDateString()
+
+  };
+
+  vouchers.unshift(voucher);
+
+  localStorage.setItem(
+    "vouchers",
+    JSON.stringify(vouchers)
+  );
 
   renderVouchers();
 
-  function generateVoucher(){
+  // RESET INPUT
+  document.getElementById("memberName").value = "";
 
-    const discount = document.getElementById("discount").value;
-    const validUntil = document.getElementById("validUntil").value;
+}
 
-    if(!validUntil){
-      alert("Isi tanggal expired dulu brok 😭");
-      return;
-    }
+function renderVouchers(){
 
-    const serial =
-      "VC-" +
-      String(vouchers.length + 1).padStart(5, "0");
+  const container =
+    document.getElementById("voucherList");
 
-    const voucher = {
-      serial: serial,
-      status: "CLAIM VOUCHER SUCCESS",
-      discount: discount + "% OFF",
-      validUntil: validUntil,
-      createdAt: new Date().toLocaleString()
-    };
+  if(vouchers.length === 0){
 
-    vouchers.unshift(voucher);
+    container.innerHTML = `
+      <div class="empty">
+        Belum ada voucher dibuat
+      </div>
+    `;
 
-    localStorage.setItem(
-      "vouchers",
-      JSON.stringify(vouchers)
+    return;
+  }
+
+  container.innerHTML = "";
+
+  vouchers.forEach((voucher, index)=>{
+
+    const card = document.createElement("div");
+
+    card.className = "voucher-card";
+
+    card.innerHTML = `
+
+      <div class="voucher-header">
+
+        <div>
+
+          <div class="success">
+            ${voucher.status}
+          </div>
+
+          <div style="
+            font-size:13px;
+            color:gray;
+            margin-top:5px;
+          ">
+            ${voucher.createdAt}
+          </div>
+
+        </div>
+
+        <div class="serial">
+          ${voucher.serial}
+        </div>
+
+      </div>
+
+      <div class="voucher-info">
+
+        <div>
+          <span class="label">Member</span>
+          <span class="value">
+            ${voucher.memberName}
+          </span>
+        </div>
+
+        <div>
+          <span class="label">Voucher</span>
+          <span class="value">
+            ${voucher.voucherType}
+          </span>
+        </div>
+
+        <div>
+          <span class="label">Valid Until</span>
+          <span class="value">
+            ${voucher.validUntil}
+          </span>
+        </div>
+
+      </div>
+
+      <div class="qr-wrapper">
+        <div id="qrcode-${index}"></div>
+      </div>
+
+    `;
+
+    container.appendChild(card);
+
+    const qrData =
+      JSON.stringify(voucher);
+
+    new QRCode(
+      document.getElementById(`qrcode-${index}`),
+      {
+        text: qrData,
+        width:180,
+        height:180
+      }
     );
 
-    renderVouchers();
-  }
+  });
 
-  function renderVouchers(){
-
-    const container =
-      document.getElementById("voucherList");
-
-    if(vouchers.length === 0){
-
-      container.innerHTML = `
-        <div class="empty">
-          Belum ada voucher dibuat
-        </div>
-      `;
-
-      return;
-    }
-
-    container.innerHTML = "";
-
-    vouchers.forEach((voucher, index)=>{
-
-      const card = document.createElement("div");
-
-      card.className = "voucher-card";
-
-      card.innerHTML = `
-        <div class="voucher-header">
-
-          <div>
-            <div class="success">
-              ${voucher.status}
-            </div>
-
-            <div style="font-size:13px;color:gray;margin-top:5px;">
-              ${voucher.createdAt}
-            </div>
-          </div>
-
-          <div class="serial">
-            ${voucher.serial}
-          </div>
-
-        </div>
-
-        <div class="voucher-info">
-
-          <div>
-            <span class="label">Discount</span>
-            <span class="value">${voucher.discount}</span>
-          </div>
-
-          <div>
-            <span class="label">Valid Until</span>
-            <span class="value">${voucher.validUntil}</span>
-          </div>
-
-        </div>
-
-        <div class="qr-wrapper">
-          <div id="qrcode-${index}"></div>
-        </div>
-      `;
-
-      container.appendChild(card);
-
-      const qrData = JSON.stringify(voucher);
-
-      new QRCode(
-        document.getElementById(`qrcode-${index}`),
-        {
-          text: qrData,
-          width:180,
-          height:180
-        }
-      );
-
-    });
-
-  }
+}
 
 </script>
 
 </body>
+
 </html>
