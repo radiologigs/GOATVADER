@@ -419,8 +419,8 @@ function renderVouchers(){
     container.appendChild(card);
 
 const qrData =
-  `${window.location.origin}/eliteglobal.html?` +
-
+const qrData =
+  `${window.location.origin}${window.location.pathname.replace('index.html','')}redeem.html?`
   `member=${encodeURIComponent(voucher.memberName)}` +
 
   `&voucher=${encodeURIComponent(voucher.voucherType)}` +
