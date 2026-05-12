@@ -418,8 +418,18 @@ function renderVouchers(){
 
     container.appendChild(card);
 
-    const qrData =
-      JSON.stringify(voucher);
+const qrData =
+  `${window.location.origin}/redeem.html?` +
+
+  `member=${encodeURIComponent(voucher.memberName)}` +
+
+  `&voucher=${encodeURIComponent(voucher.voucherType)}` +
+
+  `&serial=${encodeURIComponent(voucher.serial)}` +
+
+  `&created=${encodeURIComponent(voucher.createdAt)}` +
+
+  `&valid=${encodeURIComponent(voucher.validUntil)}`;
 
     new QRCode(
       document.getElementById(`qrcode-${index}`),
