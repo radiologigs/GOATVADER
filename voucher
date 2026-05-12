@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Voucher Generated</title>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+
+<style>
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Arial,sans-serif;
+}
+
+body{
+  background:#0f172a;
+  color:white;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
+}
+
+.card{
+  width:100%;
+  max-width:500px;
+  background:#1e293b;
+  border-radius:25px;
+  padding:30px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.4);
+}
+
+.success{
+  color:#22c55e;
+  font-size:28px;
+  font-weight:bold;
+  text-align:center;
+  margin-bottom:25px;
+}
+
+.info{
+  margin-bottom:15px;
+  padding:15px;
+  background:#0f172a;
+  border-radius:15px;
+}
+
+.label{
+  color:#94a3b8;
+  font-size:14px;
+  margin-bottom:5px;
+}
+
+.value{
+  font-size:18px;
+  font-weight:bold;
+}
+
+.qr-wrapper{
+  background:white;
+  padding:20px;
+  border-radius:20px;
+  margin-top:25px;
+  display:flex;
+  justify-content:center;
+}
+
+button{
+  width:100%;
+  margin-top:20px;
+  padding:14px;
+  border:none;
+  border-radius:14px;
+  background:#2563eb;
+  color:white;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+  <div class="success">
+    VOUCHER GENERATED
+  </div>
+
+  <div class="info">
+    <div class="label">Member</div>
+    <div class="value" id="member"></div>
+  </div>
+
+  <div class="info">
+    <div class="label">Voucher</div>
+    <div class="value" id="voucher"></div>
+  </div>
+
+  <div class="info">
+    <div class="label">Serial</div>
+    <div class="value" id="serial"></div>
+  </div>
+
+  <div class="info">
+    <div class="label">Generated</div>
+    <div class="value" id="created"></div>
+  </div>
+
+  <div class="info">
+    <div class="label">Valid Until</div>
+    <div class="value" id="valid"></div>
+  </div>
+
+  <div class="qr-wrapper">
+    <div id="qrcode"></div>
+  </div>
+
+  <button onclick="window.location.href='generate.html'">
+    Back to Generator
+  </button>
+
+</div>
+
+<script>
+
+const vouchers =
+  JSON.parse(localStorage.getItem("vouchers")) || [];
+
+const voucher =
+  vouchers[0];
+
+if(!voucher){
+
+  alert("No voucher found");
+
+}else{
+
+  document.getElementById("member").innerText =
+    voucher.memberName;
+
+  document.getElementById("voucher").innerText =
+    voucher.voucherType;
+
+  document.getElementById("serial").innerText =
+    voucher.serial;
+
+  document.getElementById("created").innerText =
+    voucher.createdAt;
+
+  document.getElementById("valid").innerText =
+    voucher.validUntil;
+
+  const qrData =
+    `https://radiologigs.github.io/GOATVADER/claim.html?` +
+
+    `member=${encodeURIComponent(voucher.memberName)}` +
+
+    `&voucher=${encodeURIComponent(voucher.voucherType)}` +
+
+    `&serial=${encodeURIComponent(voucher.serial)}` +
+
+    `&created=${encodeURIComponent(voucher.createdAt)}` +
+
+    `&valid=${encodeURIComponent(voucher.validUntil)}`;
+
+  new QRCode(
+    document.getElementById("qrcode"),
+    {
+      text:qrData,
+      width:220,
+      height:220
+    }
+  );
+
+}
+
+</script>
+
+</body>
+</html>
