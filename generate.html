@@ -455,17 +455,7 @@ function renderVouchers(){
     container.appendChild(card);
 
 const qrData =
-  `https://radiologigs.github.io/GOATVADER/eliteglobal.html?` +
-
-  `member=${encodeURIComponent(voucher.memberName)}` +
-
-  `&voucher=${encodeURIComponent(voucher.voucherType)}` +
-
-  `&serial=${encodeURIComponent(voucher.serial)}` +
-
-  `&created=${encodeURIComponent(voucher.createdAt)}` +
-
-  `&valid=${encodeURIComponent(voucher.validUntil)}`;
+  `https://radiologigs.github.io/GOATVADER/eliteglobal.html?serial=${voucher.serial}`;
 
     new QRCode(
       document.getElementById(`qrcode-${index}`),
