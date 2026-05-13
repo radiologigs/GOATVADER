@@ -7,6 +7,7 @@
 
   <!-- QR CODE LIBRARY -->
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <script src="https://unpkg.com/html5-qrcode"></script>
 
   <style>
 
@@ -223,6 +224,26 @@
       <button onclick="generateVoucher()">
         Generate
       </button>
+
+  <!-- SCANNER -->
+
+<div style="margin-top:25px;">
+
+  <button onclick="startScanner()">
+    Start QR Scanner
+  </button>
+
+  <div
+    id="reader"
+    style="
+      width:100%;
+      margin-top:20px;
+      border-radius:20px;
+      overflow:hidden;
+    ">
+  </div>
+
+</div>    
 
     </div>
 
@@ -441,6 +462,55 @@ const qrData =
         width:180,
         height:180
       }
+    );
+
+  });
+
+}
+
+  let scannerStarted = false;
+
+function startScanner(){
+
+  if(scannerStarted) return;
+
+  scannerStarted = true;
+
+  const html5QrCode =
+    new Html5Qrcode("reader");
+
+  html5QrCode.start(
+
+    {
+      facingMode:"environment"
+    },
+
+    {
+      fps:10,
+      qrbox:250
+    },
+
+    (decodedText)=>{
+
+      // STOP CAMERA
+      html5QrCode.stop();
+
+      // REDIRECT
+      window.location.href =
+        decodedText;
+
+    },
+
+    (errorMessage)=>{
+
+      // ignore scan error
+
+    }
+
+  ).catch((err)=>{
+
+    alert(
+      "Camera error brok 😭"
     );
 
   });
